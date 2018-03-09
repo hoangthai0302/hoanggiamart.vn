@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <title>Quản lý nhóm hàng</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Hoanggiamart</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/admin/quan-ly-san-pham">Sản phẩm</a>
+                </li>
+                <li class="active">
+                    <a href="/admin/quan-ly-nhom-hang">Nhóm hàng</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-menu">Menu</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-nhan">Nhãn</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+
+                <h4>Cây nhóm hàng:</h4>
+                <div id="category-tree"></div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label>Tên nhóm:</label>
+                    <input class="form-control" type="text"  id="name">
+
+                </div>
+
+                <div class="form-group">
+                    <label for="sel1">Nhóm cha:</label>
+                    <select class="form-control" id="category_parent_id">
+                        <option value="">--</option>
+                    </select>
+
+                </div>
+                <div class="form-group">
+
+                    <button type="button" class="btn btn-success btn-sm btn-add-category">
+                        <span class="glyphicon glyphicon-plus"></span> Thêm mới</button>
+                    <button type="button" class="btn btn-primary btn-sm btn-save-category">
+                        <span class="glyphicon glyphicon-ok"></span> Lưu thay đổi</button>
+                    <!-- <button type="button" class="btn btn-danger btn-sm btn-remove">
+                        <span class="glyphicon glyphicon-remove"></span> Xóa sp</button> -->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="/js/admin.js"></script>
+    <script>
+        var categories;
+        $.get('/categories', function (data, status) {
+            categories = data;
+            for (let cat of data) {
+                $('#category_parent_id').append(
+                    `<option value=${cat.category_id}>${cat.category_name}</option>`)
+            }
+            let roots = arrayToHierarchy(data, 'category_id', 'parent_id');
+            let html = buildList(roots, true);
+            $('#category-tree').html(html);
+
+        })
+
+        function setActive(id) {
+            console.log("id:" + id)
+            $('#category-tree a').removeClass('active');
+            $('#cat-' + id).addClass('active');
+
+            for (let cat of categories) {
+                if (cat.category_id == id) {
+                    if (cat.parent_id) {
+                        $('#category_parent_id').val(cat.parent_id);
+                    } else {
+                        $('#category_parent_id').val(-1);
+
+                    }
+                }
+            }
+
+
+            if (categories && categories.length) {
+                for (let i = 0; i < categories.length; i++) {
+                    if (categories[i].category_id == id) {
+                        populateData(categories[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        function buildList(data, isSub) {
+            var html = (isSub) ? '<div>' : ''; // Wrap with div if true
+            html += '<ul>';
+            for (item in data) {
+                html += '<li>';
+                if (typeof (data[item].children) === 'object') { // An array will return 'object'
+                    if (isSub) {
+                        html +=
+                            `<a href="javascript:;" id="cat-${data[item].category_id}" onclick="setActive(${data[item].category_id})">` +
+                            data[item].category_name + '</a>';
+                    } else {
+                        html +=
+                            `<a href="javascript:; " id="cat-${data[item].category_id}"  onclick="setActive(${data[item].category_id})">` +
+                            data[item].category_name + '</a>'; // Submenu found, but top level list item.
+                    }
+                    html += buildList(data[item].children, true); // Submenu found. Calling recursively same method (and wrapping it in a div)
+                } else {
+                    html +=
+                        `<a href="javascript:;" id="cat-${data[item].category_id}" onclick="setActive(${data[item].category_id})">` +
+                        data[item].category_name + '</a>'; // No submenu
+                }
+                html += '</li>';
+            }
+            html += '</ul>';
+            html += (isSub) ? '</div>' : '';
+            return html;
+        }
+
+        function arrayToHierarchy(flat, idAttr, parentIdAttr) {
+
+            var roots = [] // things without parent
+
+            // make them accessible by guid on this map
+            var all = {}
+
+            flat.forEach(function (item) {
+                all[item[idAttr]] = item
+            })
+
+            // connect childrens to its parent, and split roots apart
+            Object.keys(all).forEach(function (idAttr) {
+                var item = all[idAttr]
+                if (item[parentIdAttr] === null) {
+                    roots.push(item)
+                } else if (item[parentIdAttr] in all) {
+                    var p = all[item[parentIdAttr]]
+                    if (!('children' in p)) {
+                        p.children = []
+                    }
+                    p.children.push(item)
+                }
+            })
+
+            // done!
+            return roots
+        }
+
+
+        function populateData(category) {
+            $('#name').val(category.category_name);
+        }
+
+        $('.btn-add-category').click(function () {
+            let data = {};
+
+            let name = $('#name').val();
+            if (!name) {
+                alert('Chưa nhập tên nhóm hàng')
+            } else {
+                data.categoryName = name;
+                data.parentId = $('#category_parent_id').val();
+                data.searchable = false;
+                $.ajax({
+                    url: '/category',
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (res) {
+                        alert('Thêm thành công!');
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        $('.btn-save-category').click(function () {
+            let data = {};
+            let count = $('#category-tree li a.active').length;
+
+            if (!count) {
+                alert('Chưa chọn nhóm hàng.')
+            } else {
+                let name = $('#name').val();
+                if (!name) {
+                    alert('Chưa nhập tên nhóm hàng')
+                } else {
+
+                    let id = $('#category-tree li a.active').attr('id').split('-')[1];
+                    data.categoryId = id;
+                    data.categoryName = name;
+                    data.parentId = $('#category_parent_id').val();
+                    data.searchable = false;
+                    $.ajax({
+                        url: '/category',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            window.location.reload();
+                        }
+                    })
+                }
+            }
+
+        })
+    </script>
+</body>
+
+
+</html>

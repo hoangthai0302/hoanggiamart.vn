@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <title>Quản lý nhóm hàng</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Hoanggiamart</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/admin/quan-ly-san-pham">Sản phẩm</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-nhom-hang">Nhóm hàng</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-menu">Menu</a>
+                </li>
+                <li class="active">
+                    <a href="/admin/quan-ly-nhan">Nhãn</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-md-6">
+
+                <div class="form-group">
+                    <div id="tag-choice"></div>
+                    <hr/>
+                    <div id="tag-cloud"></div>
+                </div>
+                
+            </div>
+            <div class="col-sm-6 col-md-6">
+                <h4>Thêm nhãn:</h4>
+                <div class="row">
+                    <label class="control-label col-sm-2">Tên nhãn:</label>
+                    <div class="col-sm-8 form-group">
+                        <input class="form-control" type="text" id="tag_name">
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-sm btn-success btn-add-tag">Thêm</button>
+                    </div>
+                </div>
+                <hr/>
+                <h4>Sửa nhãn:</h4>
+                <div class="row">
+                    <label class="control-label col-sm-2">Tên nhãn:</label>
+                    <div class="col-sm-8 form-group">
+                        <input class="form-control" type="text" id="tag_name_edit">
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-sm btn-success btn-save-tag">Sửa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="/js/admin.js"></script>
+    <script>
+        var categories;
+        $.get('/tags', function (data, status) {
+            for (var i = 0; i < data.length; i++) {
+                let el = $('<a class="tag-item" href="javascript:;" data-tag-id="' + data[i].tag_id +  '">' + data[i].tag_name + '</a>');
+                    el.click(function(){
+                        $('.tag-item').removeClass('active');
+                        $(this).addClass('active');
+                        let name = $(this).html();
+                        $('#tag_name_edit').val(name);
+                    });
+                $('#tag-cloud').append(el);
+            }
+        })
+
+       
+
+        function populateData(category) {
+            $('#name').val(category.category_name);
+        }
+
+        $('.btn-add-tag').click(function () {
+            let data = {};
+
+            let name = $('#tag_name').val();
+            if (!name) {
+                alert('Chưa nhập tên nhãn.')
+            } else {
+                data.tagName = name;
+                $.ajax({
+                    url: '/tag',
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (res) {
+                        if(res && res[0] && res[0][0] && res[0][0].tag_id) {
+
+                            let el = $('<a class="tag-item" href="javascript:;" data-tag-id="' +res[0][0].tag_id +  '">' + name + '</a>');
+                                el.click(function(){
+                                    $(this).toggleClass('active');
+                                })
+                            $('#tag-cloud').append(el);
+                            alert('Thêm thành công.')
+                            $('#tag_name').val('');
+                        }
+
+                    }
+                })
+            }
+        })
+
+        $('.btn-save-tag').click(function () {
+            let data = {};
+            let count = $('.tag-item.active').length;
+
+            if (!count) {
+                alert('Chưa chọn nhãn.')
+            } else {
+                let name = $('#tag_name_edit').val();
+                if (!name) {
+                    alert('Chưa nhập tên nhãn.')
+                } else {
+
+                    let id = $('.tag-item.active').attr('data-tag-id');
+                    data.tagId = id;
+                    data.tagName = name;
+                    $.ajax({
+                        url: '/tag',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            alert('Sửa thành công.')
+                            $('.tag-item.active').html(name);
+                        }
+                    })
+                }
+            }
+
+        })
+    </script>
+</body>
+
+
+</html>

@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.8.0/standard/ckeditor.js"></script>
+    <title>Quản lý sản phẩm</title>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Hoanggiamart</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/admin/quan-ly-san-pham">Sản phẩm</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-nhom-hang">Nhóm hàng</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-menu">Menu</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-nhan">Nhãn</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h3>Tìm kiếm sản phẩm</h3>
+        <div class="row">
+
+            <div class="col-sm-5 margin-bottom ">
+                <input class="form-control" placeholder="Nhập từ khóa tìm kiếm sp theo tên" type="text" id="name-search">
+            </div>
+            <div class="col-sm-7">
+                <button type="button" class="btn btn-primary btn-sm btn-search">
+                    <span class="glyphicon glyphicon-search"></span> Tìm kiếm</button>
+                <button type="button" class="btn btn-success btn-sm btn-add">
+                    <span class="glyphicon glyphicon-ok"></span> Thêm mới</button>
+                <button type="button" class="btn btn-success btn-sm btn-save">
+                    <span class="glyphicon glyphicon-pencil"></span> Lưu thay đổi</button>
+                <button type="button" class="btn btn-danger btn-sm btn-remove">
+                    <span class="glyphicon glyphicon-remove"></span> Xóa sp</button>
+            </div>
+            <div class="col-xs-1">
+
+            </div>
+            <div class="col-xs-1">
+
+            </div>
+
+
+        </div>
+        <div id="result">
+        </div>
+        <hr/>
+
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#1" data-toggle="tab">Thông tin cơ bản</a>
+            </li>
+            <li>
+                <a href="#2" data-toggle="tab">Nhóm hàng</a>
+            </li>
+            <li>
+                <a href="#3" data-toggle="tab">Thương hiệu</a>
+            </li>
+            <li>
+                <a href="#4" data-toggle="tab">Nhãn</a>
+            </li>
+            <li>
+                <a href="#5" data-toggle="tab">Ảnh</a>
+            </li>
+            <li>
+                <a href="#6" data-toggle="tab">Đặc tính</a>
+            </li>
+            <li>
+                <a href="#7" data-toggle="tab">Mô tả ngắn</a>
+            </li>
+            <li>
+                <a href="#8" data-toggle="tab">Mô tả chi tiết</a>
+            </li>
+        </ul>
+        <div class="tab-content ">
+            <div class="tab-pane active" id="1">
+                <br/>
+                <div class="row">
+                    <div class="col-sm-6 col-md-6">
+
+                        <div class="form-group">
+                            <label>Tên:</label>
+                            <input class="form-control" placeholder="tên sản phẩm" type="text" id="name">
+                            <input type="hidden" value="" id="item_id">
+                        </div>
+                        <!-- <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Mã:</label>
+                                    <input class="form-control" placeholder="Mã sản phẩm" type="text" id="code">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Mã SKU (Nếu có):</label>
+                                    <input class="form-control" type="text" id="sku">
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="block">Giá bán:<span class="price_final pull-right"></span></label>
+                                    <input class="form-control" type="number" id="price_final">
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="block">Giá:<span class="price pull-right"></span></label>
+                                    <input class="form-control" type="number" id="price">
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                        
+                        <div class="row">
+                            <!-- <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Đơn vị:</label>
+                                    <input class="form-control" type="text" id="unit">
+                                </div>
+                            </div> -->
+                            <div class="col-sm-6">
+                                <div class="checkbox">
+                                    <label for="stock">Còn hàng
+                                        <input type="checkbox" value="1" id="stock" checked>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>Xuất xứ:</label>
+                                    <input class="form-control" type="text" id="origin">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label>Bảo hành:</label>
+                                    <input class="form-control" type="text" id="warranty">
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="2">
+                <br/>
+                <div class="row">
+                    <div class="col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <select class="form-control" id="category">
+
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                            <button class="btn btn-success btn-brand" data-toggle="modal" data-target="#categoryModal">Thêm nhóm</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="3">
+                <br/>
+                <div class="row">
+                    <div class="col-sm-6 col-md-6">
+
+                        <div class="form-group">
+                            <select class="form-control" id="brand">
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-6">
+                            <button class="btn btn-success btn-brand" data-toggle="modal" data-target="#brandModal">Thêm thương hiệu</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="4">
+                <br/>
+                <div class="row">
+                    <div class="col-sm-6 col-md-6">
+
+                        <div class="form-group">
+                            <div id="tag-choice"></div>
+                            <hr/>
+                            <div id="tag-cloud"></div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Tên nhãn:</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text" id="tag_name">
+                            </div>
+                            <div class="col-sm-2">
+                                <button class="btn btn-sm btn-success btn-add-tag">Thêm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="5">
+                <div class="row">
+                    <div class="col-sm-6 col-md-6">
+                        
+                        <div class="form-group">
+                            <div>
+                                <label>Ảnh</label>
+                            </div>
+                            <div class="item-preview">
+                                <img src='/img/no-image.png' id="img1">
+                            </div>
+                            <input type="file" class="hidden upload" name="image" accept="image/*">
+                            <div class="item-preview">
+                                <img src='/img/no-image.png' id="img2">
+                            </div>
+                            <input type="file" class="hidden upload" name="image" accept="image/*">
+                            <div class="item-preview">
+                                <img src='/img/no-image.png' id="img3">
+                            </div>
+                            <input type="file" class="hidden upload" name="image" accept="image/*">
+                            <div class="item-preview">
+                                <img src='/img/no-image.png' id="img4">
+                            </div>
+                            <input type="file" class="hidden upload" name="image" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="6">
+                <h4>Đặc tính chi tiết:</h4>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tên đặc tính</th>
+                                <th>Giá trị</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="specs">
+                            <!-- <tr>
+                                <td>
+                                    <input type="text" class="form-control">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control">
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr> -->
+
+                        </tbody>
+                    </table>
+                    <div><button class="btn btn-success add-spec">Add</button></div>
+                </div>
+               
+            </div>
+            <div class="tab-pane" id="7">
+               
+                <h4>Mô tả ngắn:</h4>
+                <div class="row">
+                    <div class="form-group col-sm-12">
+                        <textarea class="form-control" placeholder="Mô tả ngắn" rows="5" name="shortdesc" id="shortdesc"></textarea>
+                    </div>
+
+                </div>
+
+               
+            </div>
+            <div class="tab-pane" id="8">
+               
+                <h4>Mô tả đầy đủ:</h4>
+                <div class="row">
+                    <div class="form-group col-sm-12">
+                        <textarea class="form-control" placeholder="Nhập mô tả sản phẩm" rows="5" name="description" id="description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <script src="/js/admin.js"></script>
+    <script>
+        CKEDITOR.replace('description');
+        CKEDITOR.replace('shortdesc');
+
+        $('.upload').change(function (e) {
+            var files = e.target.files;
+            if (!files[0]) {
+                return;
+            }
+
+            let targetImg = $(this).prev().children('img');
+            var data = new FormData();
+            data.append('image', files[0]);
+            var reader = new FileReader();
+
+
+            $.ajax({
+                url: '/uploads',
+                type: 'post',
+                data: data,
+                contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                processData: false,
+                success: function (data) {
+                    console.info(data);
+                    if (data && data.filename) {
+                        $(targetImg).attr('src', '/img/small/' + data.filename);
+                    } else {
+                        alert('Upload không thành công. Xin thử lại!');
+                    }
+                }
+            });
+
+
+        })
+
+        var searchResultData;
+        $(".btn-search").click(function () {
+
+            let text = $('input#name-search').val();
+            if (text && text.length > 2) {
+                searchItemByName(text);
+            }
+
+        });
+
+        $('#name-search').keypress(function (e) {
+            var key = e.which;
+            if (key == 13) // the enter key code
+            {
+                let text = $('input#name-search').val();
+                if (text && text.length > 2) {
+                    searchItemByName(text);
+                }
+            }
+        });
+
+
+        function populateData(id) {
+            let item;
+            for (let _item of searchResultData) {
+                if (_item.item_id == id) {
+                    item = _item;
+                    window.selectedItem = item;
+                    break;
+                }
+            }
+            $('#item_id').val(item.item_id);
+            $('#name').val(item.item_name);
+            $('#code').val(item.item_code);
+            $('#sku').val(item.item_sku);
+            $('#category').val(item.category_id);
+            $('#brand').val(item.brand_id);
+            $('#price').val(item.price) || 0;
+            $('#price_final').val(item.price_final) || 0;
+            $('#stock').prop('checked', !!item.stock)
+            CKEDITOR.instances.description.setData(item.description);
+            CKEDITOR.instances.shortdesc.setData(item.shortdesc);
+            $('#img1').attr('src', ('/img/small/' + item.image01) || '/img/no-image.png');
+            $('#img2').attr('src', ('/img/small/' + item.image02) || '/img/no-image.png');
+            $('#img3').attr('src', ('/img/small/' + item.image03) || '/img/no-image.png');
+            $('#img4').attr('src', ('/img/small/' + item.image04) || '/img/no-image.png');
+
+            $('#unit').val(item.unit || '');
+            $('#origin').val(item.origin || '');
+            $('#warranty').val(item.warranty || '');
+
+            //populate specs, first clear old data
+            $('#specs').empty();
+            //then fill new data 
+            let specs = JSON.parse(item.specs);
+            console.log(specs);
+            for (let spec of specs) {
+                let btnRemove = $('<button class="btn btn-danger "> delete </button>');
+                $(btnRemove).click(function () {
+                    $(this).parent().parent().remove();
+                })
+                let tr =
+                    $(`<tr>
+                            <td><input type="text" class="form-control" value = "${spec.name}"></td>
+                            <td><input type="text" class="form-control" value = "${spec.value}"></td>
+                            <td></td>
+                        </tr>`);
+                        
+                $('td:last-child',tr).append(btnRemove);        
+                $('#specs').append(tr);
+            }
+            
+            //populate tag
+            $.ajax({
+                url: '/tagsByItem',
+                type: 'get',
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    //clear old active tag
+                    $('.tag-item').removeClass('active');
+                    if(data && data.length){
+                        for(let item of data){
+                            let tag_id = item.tag_id;
+                            let tag_name = item.tag_name;
+                            $('.tag-item[data-tag-id=' + tag_id + ']').addClass('active');
+                        }
+                    }
+
+                }
+            });
+
+        }
+
+        function searchItemByName(text) {
+            $.ajax({
+                url: '/findItemByName',
+                type: 'get',
+                data: {
+                    name: text
+                },
+                success: function (data) {
+                    $('#result').empty();
+                    if (data[0] && data[0].length) {
+                        searchResultData = data[0];
+                        $('#result').append('<h4>Kq tìm kiếm:</h4>')
+                        for (item of data[0]) {
+                            let li = $(
+                                `<div class="radio item-result" >
+                                    <label >
+                                            <input onclick="populateData(${item.item_id})" type="radio" name="selection-radio"> ${item.item_name}
+                                    </label>
+                                </div>`
+                            );
+
+                            $('#result').append(li);
+
+                        }
+                    }
+
+                }
+            });
+        }
+
+        $('.btn.add-spec').click(function () {
+            let btn = $('.btn.add-spec');
+            let tr = $('<tr>');
+            tr.append(
+                '<td><input type="text" class="form-control"></td><td><input type="text" class="form-control"></td>'
+            )
+            let td = $('<td>');
+
+            $(tr).append(td);
+
+            let btnRemove = $('<button class="btn btn-danger "> delete </button>');
+            $(btnRemove).click(function () {
+                $(this).parent().parent().remove();
+            })
+            $(td).append(btnRemove);
+            $('#specs').append(tr);
+                
+        })
+
+        $('.btn-add').click(function () {
+            
+                let data = {};
+    
+                data.name = $('#name').val();
+                data.code = $('#code').val();
+                data.sku = $('#sku').val();
+                data.category = $('#category').val();
+                data.brand = $('#brand').val();
+                data.price = $('#price').val() || 0;
+                data.price_final = $('#price_final').val() || 0;
+                data.stock = $('#stock').is(':checked');
+    
+                data.description = CKEDITOR.instances['description'].getData();
+                data.shortdesc = CKEDITOR.instances['shortdesc'].getData();
+    
+                var img1 = $('#img1').attr('src');
+                var img2 = $('#img2').attr('src');
+                var img3 = $('#img3').attr('src');
+                var img4 = $('#img4').attr('src');
+                data.img1 = extractImageName(img1);
+                data.img2 = extractImageName(img2);
+                data.img3 = extractImageName(img3);
+                data.img4 = extractImageName(img4);
+                data.unit = $('#unit').val();
+                data.origin = $('#origin').val();
+                data.warranty = $('#warranty').val();
+    
+    
+                data.specs = [];
+                $('#specs tr').each(function () {
+                    let name = $('td:first-child input', this).val();
+                    let value = $('td:nth-child(2) input', this).val();
+                    data.specs.push({
+                        name: name,
+                        value: value
+                    })
+                })
+
+                data.tags = [];
+                $('.tag-item.active').each(function(){
+                    let tagId = $(this).attr('data-tag-id');
+                    data.tags.push(tagId);
+                })
+    
+                console.log(data);
+                if (!data.name) {
+                    alert('Bạn chưa nhập tên sp!')
+                } else if (!data.price) {
+                    alert('Bạn chưa nhập giá sp!')
+                } else if (!data.description || !data.shortdesc) {
+                    alert('Bạn chưa nhập mô tả sp!')
+                } else {
+                    let catName = $("#category option:selected").text();
+                    let c = window.confirm(' Thêm sản phẩm "' + data.name + '" vào nhóm "' + catName + '" ?');
+                    if(c){
+                        $.ajax({
+                            url: '/item',
+                            type: "POST",
+                            data: JSON.stringify(data),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (res) {
+                                console.log(res);
+                                alert('Thêm thành công')
+                            }
+                        })
+                    }
+                }
+      
+
+
+        })
+
+        $('.btn-save').click(function () {
+            let data = {};
+
+            data.name = $('#name').val();
+            data.code = $('#code').val();
+            data.sku = $('#sku').val();
+            data.category = $('#category').val();
+            data.brand = $('#brand').val();
+            data.price = $('#price').val() || 0;
+            data.price_final = $('#price_final').val() || 0;
+            data.stock = $('#stock').is(':checked');
+
+
+            data.description = CKEDITOR.instances['description'].getData();
+            data.shortdesc = CKEDITOR.instances['shortdesc'].getData();
+
+            var img1 = $('#img1').attr('src');
+            var img2 = $('#img2').attr('src');
+            var img3 = $('#img3').attr('src');
+            var img4 = $('#img4').attr('src');
+            data.img1 = extractImageName(img1);
+            data.img2 = extractImageName(img2);
+            data.img3 = extractImageName(img3);
+            data.img4 = extractImageName(img4);
+            data.unit = $('#unit').val();
+            data.origin = $('#origin').val();
+            data.warranty = $('#warranty').val();
+
+            data.specs = [];
+            $('#specs tr').each(function () {
+                let name = $('td:first-child input', this).val();
+                let value = $('td:nth-child(2) input', this).val();
+                if (name && value) {
+                    data.specs.push({
+                        name: name,
+                        value: value
+                    })
+                }
+            })
+
+            data.tags = [];
+            $('.tag-item.active').each(function(){
+                let tagId = $(this).attr('data-tag-id');
+                data.tags.push(tagId);
+            })
+
+            console.log(data);
+            if (window.selectedItem) {
+                let id = selectedItem.item_id;
+                data.item_id = id;
+                $.ajax({
+                    url: '/item',
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (res) {
+                        console.log(res);
+                        alert("Sửa thành công")
+                        $(".btn-search").trigger('click');
+                    }
+                })
+            }else{
+                alert('Chưa chọn sản phẩm.')
+            }
+
+
+        })
+
+        $('.btn-remove').click(function () {
+            if (window.selectedItem) {
+                var choice = confirm('Xóa sản phẩm?');
+                if (choice) {
+                    let id = selectedItem.item_id;
+
+                    $.ajax({
+                        url: '/remove-item/' + id,
+                        type: "POST",
+                        success: function (res) {
+                            console.log(res);
+                            alert("Xóa thành công")
+                            $(".btn-search").trigger('click');
+                        }
+                    })
+                }
+
+            } else {
+                alert("Chưa chọn sản phẩm")
+            }
+        })
+
+
+        $.get('/categories', function (data, status) {
+            //let roots = flatToHierarchy(data, 'category_id', 'parent_id');
+            for (var i = 0; i < data.length; i++) {
+                $('#category').append('<option value="' + data[i].category_id + '">' + data[i].category_name +
+                    '</option>')
+            }
+        })
+
+        $.get('/brands', function (data, status) {
+            for (var i = 0; i < data.length; i++) {
+                $('#brand').append('<option value="' + data[i].brand_id + '">' + data[i].brand_name +
+                    '</option>')
+            }
+        })
+
+        $.get('/tags', function (data, status) {
+            for (var i = 0; i < data.length; i++) {
+                let el = $('<a class="tag-item" href="javascript:;" data-tag-id="' + data[i].tag_id +  '">' + data[i].tag_name + '</a>');
+                    el.click(function(){
+                        $(this).toggleClass('active');
+                    })
+                $('#tag-cloud').append(el);
+            }
+        })
+
+        function flatToHierarchy(flat, idAttr, parentIdAttr) {
+
+            var roots = [] // things without parent
+
+            // make them accessible by guid on this map
+            var all = {}
+
+            flat.forEach(function (item) {
+                all[item[idAttr]] = item
+            })
+
+            // connect childrens to its parent, and split roots apart
+            Object.keys(all).forEach(function (idAttr) {
+                var item = all[idAttr]
+                if (item[parentIdAttr] === null) {
+                    roots.push(item)
+                } else if (item[parentIdAttr] in all) {
+                    var p = all[item[parentIdAttr]]
+                    if (!('children' in p)) {
+                        p.children = []
+                    }
+                    p.children.push(item)
+                }
+            })
+
+            // done!
+            return roots
+        }
+
+        
+    </script>
+</body>
+<!-- Modal -->
+<div class="modal fade" id="categoryModal" role="dialog">
+        <div class="modal-dialog">
+    
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Thêm nhóm hàng</h4>
+                </div>
+                <div class="modal-body">
+    
+                    <form class="form-horizontal">
+    
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Tên nhóm:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="cat_name_popup">
+                            </div>
+    
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Nhóm cha:</label>
+                            <div class="col-sm-10">
+    
+                                <select class="form-control" id="category_parent_id_popup">
+                                    <option value="">--</option>
+                                </select>
+    
+    
+                            </div>
+    
+                        </div>
+    
+                    </form>
+                </div>
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Hủy
+                    </button>
+                    <button type="button" class="btn btn-primary btn-add-category">
+                        Thêm
+                    </button>
+                </div>
+    
+            </div>
+    
+        </div>
+    </div>
+
+    <!--Brand modal -->
+    <div class="modal fade" id="brandModal" role="dialog">
+            <div class="modal-dialog">
+        
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Thêm thương hiệu:</h4>
+                    </div>
+                    <div class="modal-body">
+        
+                        <form class="form-horizontal">
+        
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Tên thương hiệu:</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" type="text" id="brand_name_popup">
+                                </div>
+        
+                            </div>
+                            
+        
+                        </form>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Hủy
+                        </button>
+                        <button type="button" class="btn btn-primary btn-add-brand">
+                            Thêm
+                        </button>
+                    </div>
+        
+                </div>
+        
+            </div>
+        </div>
+
+        <script>
+            $.get('/categories', function (data, status) {
+                for (let cat of data) {
+                    $('#category_parent_id_popup').append(
+                        `<option value=${cat.category_id}>${cat.category_name}</option>`)
+                }
+
+            })
+
+            $('.btn-add-category').click(function () {
+                let data = {};
+
+                let name = $('#cat_name_popup').val();
+                if (!name) {
+                    alert('Chưa nhập tên nhóm hàng')
+                } else {
+                    data.categoryName = name;
+                    data.parentId = $('#category_parent_id_popup').val();
+                    data.searchable = false;
+                    $.ajax({
+                        url: '/category',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            if(res && res[0] && res[0][0] && res[0][0].category_id) {
+                                $('#category').append('<option value="' + res[0][0].category_id + '">' + name + '</option>')
+                                $('#category').val(res[0][0].category_id);
+                                $('#category_parent_id_popup').append('<option value="' + res[0][0].category_id + '">' + name + '</option>')
+                            }
+
+                            $('#categoryModal').modal('hide');
+                        }
+                    })
+                }
+            })
+
+            $('.btn-add-brand').click(function () {
+                let data = {};
+
+                let name = $('#brand_name_popup').val();
+                if (!name) {
+                    alert('Chưa nhập tên thương hiệu!')
+                } else {
+                    data.brandName = name;
+                    $.ajax({
+                        url: '/brand',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            if(res && res[0] && res[0][0] && res[0][0].brand_id) {
+                                $('#brand').append('<option value="' + res[0][0].brand_id + '">' + name + '</option>')
+                                $('#brand').val(res[0][0].brand_id);
+                            }
+
+                            $('#brandModal').modal('hide');
+                        }
+                    })
+                }
+            });
+
+            $('.btn-add-tag').click(function () {
+                let data = {};
+
+                let name = $('#tag_name').val();
+                if (!name) {
+                    alert('Chưa nhập tên nhãn.')
+                } else {
+                    data.tagName = name;
+                    $.ajax({
+                        url: '/tag',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            if(res && res[0] && res[0][0] && res[0][0].tag_id) {
+
+                                let el = $('<a class="tag-item" href="javascript:;" data-tag-id="' +res[0][0].tag_id +  '">' + name + '</a>');
+                                    el.click(function(){
+                                        $(this).toggleClass('active');
+                                    })
+                                $('#tag-cloud').append(el);
+                                alert('Thêm thành công.')
+                                $('#tag_name').val('');
+                            }
+
+                        }
+                    })
+                }
+            })
+        </script>
+</html>

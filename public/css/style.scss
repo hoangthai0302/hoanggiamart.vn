@@ -1,0 +1,92 @@
+body {
+    font-size: 13px;
+}
+.hidden {
+    display: none;
+}
+
+.clear {
+    clear: both;
+}
+.block {
+    display: block;
+}
+.margin-bottom {
+    margin-bottom: 20px;
+}
+
+.margin-top {
+    margin-top:20px;
+}
+
+.margin-left {
+    margin-left:20px;
+}
+
+img[src=""] {
+    display: none;
+}
+
+.clearfix:after {
+    clear:both;
+    display: table;
+}
+
+.btn:active, .btn-group.open .dropdown-toggle {
+    box-shadow: none;
+}
+
+
+/*adjust modal and form*/
+.modal-header {
+    border-radius: 4px 4px 0 0;
+}
+.modal-body .form-horizontal .col-sm-2,
+.modal-body .form-horizontal .col-sm-10 {
+    width: 100%
+}
+
+.modal-body .form-horizontal .control-label {
+    text-align: left;
+}
+.modal-body .form-horizontal .col-sm-offset-2 {
+    margin-left: 15px;
+}
+
+.btn.btn-default {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 0;
+    color: #333;
+    text-transform: none;
+    font-size: 13px;
+    padding: 8px 12px;
+    line-height: 1.1;
+    font-weight: 400;
+    z-index: 3;
+}
+.btn-default.active.focus,.open>.dropdown-toggle.btn-default , .btn-default.active:focus, .btn-default.active:hover, .btn-default:active.focus, .btn-default:active:focus, .btn-default:active:hover, .open>.dropdown-toggle.btn-default.focus, .open>.dropdown-toggle.btn-default:focus, .open>.dropdown-toggle.btn-default:hover {
+    background-color: #fff;
+    border-color: #ccc;
+}
+ul.dropdown-menu {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+
+    font-size: 13px;
+    a.active {
+        font-weight: bold;
+    }
+    a:hover {
+        color:#0388cd;
+    }
+
+}
+
+.dropdown-menu {
+    min-width: 140px ;
+}
+
+.checkbox-danger input[type="checkbox"]:checked + label::before, .checkbox-danger input[type="radio"]:checked + label::before {
+    outline: none;
+}

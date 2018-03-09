@@ -1,0 +1,37 @@
+node_modules/
+dist/
+.env/
+log.html
+output.xml
+report.html
+*.png
+npm-debug.log
+
+# Node Files #
+/node_modules
+/bower_components
+npm-debug.log
+
+# Dist #
+/dist
+/public/__build__/
+/src/*/__build__/
+/__build__/**
+/public/dist/
+/src/*/dist/
+/dist/**
+.webpack.json
+
+# Doc #
+/doc/
+
+# IDE #
+.idea/
+*.swp
+
+# OS generated files #
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+

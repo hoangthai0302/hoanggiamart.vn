@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/awesome-checkbox.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/client.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.elevateZoom-3.0.8.min.js"></script>
+
+
+    <title>Siêu thị hàng tiêu dùng Thái Lan - Nhật Bản - Hàn Quốc - Việt Nam</title>
+</head>
+
+<body>
+
+    <%- include header.ejs %>
+    
+    
+    <% listMenuHome.forEach(function(menu,index) { %>
+    <div class="home__section">
+
+        <div class="container">
+            <h2 class="home__title visible-xs no-padding"><a href="<%= menu.slugUrl%>"><%=menu.menu_name%></a></h2>
+            <div class="row">
+                    <div class="col-xs-12 hidden-xs">
+                        <h2 class="home__title home__title--section-5" style="border-color: #ef5350"><a href="<%= menu.slugUrl%>"><%=menu.menu_name%><span class="adr-icon icon-arrow-next visible-xs"></span></a></h2>
+                        <ul class="home__title__menu  hidden-sm hidden-xs">
+                                <% menu.children.forEach(function(child,index) { %>
+                                    <li><a href="<%=child.slugUrl%>"><%=child.menu_name%></a></li>
+                                <% }); %>
+                            </ul>
+                    </div>
+            </div>
+            <div class="product-list__wrapper">
+
+                <div class="row">
+                        <% menu.items.forEach(function(item,index) { %>
+                            <div class="col-xs-4 col-sm-3 col-lg-2 product-item-wrapper">
+                                    <div class="product-item__placeholder hidden-sm hidden-xs"></div>
+                                <div class="product-item">
+                                    <div class="product-item__container">
+                                        <a class="product-item__thumbnail" href="<%= item.slugUrl%>">
+                                            <img class="default lazy swiper-lazy " src="<%= '/img/thumbs/' + item.image01%>" alt="<%=item.item_name%>" title="<%=item.item_name%>">
+                                            <img class="hover " src="<%= '/img/thumbs/' + (item.image02 || item.image01)%>" alt="<%=item.item_name%>" title="<%=item.item_name%>">
+                                        </a>
+    
+                                        <div class="product-item__info">
+                                            <a class="product-item__info-title" href="<%= item.slugUrl%>">
+                                                <%=item.item_name%>
+                                            </a>
+    
+                                            <div class="product-item__info-price">
+                                                <span class="product-item__info-price-sale">
+                                                    <%=formatPrice(item.price_final)%>đ</span>
+                                                    <% if (item.price > 0) { %>
+                                                        <span class="product-item__info-price-original">
+                                                        <%=formatPrice(item.price)%>đ</span>
+                                                    <% } %>
+                                            </div>
+    
+                                            <div class="product-item__info-discount">
+                                                <% if (item.price_final != null && item.price > 0) { %>
+                                                    -<%=Math.ceil((item.price - item.price_final)/item.price*100)%>%
+                                                        <% } %>
+    
+                                            </div>
+    
+                                        </div>
+                                    </div>
+                                </div>
+    
+                            </div>
+                            <% }); %>
+    
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <% }); %>
+    
+    <%- include footer.ejs %>
+
+    <script src="js/client.js"></script>
+</body>
+
+</html>

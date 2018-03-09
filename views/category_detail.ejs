@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/awesome-checkbox.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/client.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include header.ejs %>
+    <div class="container">
+
+        <ol id="header-breadcrumb" class="header-breadcrumb breadcrumb">
+
+            <% if(!search) {%>
+                <li>
+                    <a href='/'>
+                        TRANG CHỦ
+                    </a>
+                </li>
+                <% parents.forEach(function(parent,index) { %>
+                    <li>
+                        <a href="<%= parent.slugUrl%>">
+                            <%= parent.category_name%>
+                        </a>
+                    </li>
+                    <% }); %>
+                        <li>
+                            <a>
+                                <%= currentCat.category_name%>
+                            </a>
+                        </li>
+                        <%}%>
+
+                            <% if(search) {%>
+                                <li>
+                                    <a href='/'>
+                                        TRANG CHỦ
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a>
+                                        KẾT QUẢ TÌM KIẾM:
+                                        <%=keyword%>
+                                    </a>
+                                </li>
+                                <%}%>
+        </ol>
+        <div class="row">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 hidden-sm">
+                <div id="sidebar-wrapper" class="hidden-xs">
+                    <div class="sidebar-container">
+                        <% if(currentCat != null) {%>
+                            <div class="section-sidebar">
+                                <ul class="category-tree">
+
+
+                                    <% parents.forEach(function(parent,index) { %>
+                                        <li class="category-parent lv-<%=index%>">
+                                            <a href="<%= parent.slugUrl %>" class="">
+                                                <%= parent.category_name%>
+                                            </a>
+                                        </li>
+                                        <% }); %>
+
+                                            <% siblings.forEach(function(sibling) { %>
+                                                <li class="category-sibling lv-<%=parents.length%>">
+                                                    <a href="<%= sibling.slugUrl%>" class="<%= sibling.active%>">
+                                                        <%= sibling.category_name%>
+                                                    </a>
+                                                </li>
+                                                <% if(sibling.category_id == currentCat.category_id){%>
+                                                    <% children.forEach(function(child) { %>
+                                                        <li class="category-child lv-<%=parents.length + 1%>">
+                                                            <a href="<%= child.slugUrl %>" class="">
+                                                                <%= child.category_name%>
+                                                            </a>
+                                                        </li>
+                                                        <% }); %>
+
+                                                            <% }%>
+
+                                                                <% }); %>
+
+
+                                </ul>
+                            </div>
+                            <%}%>
+                                <div class="section-selected-item">
+
+                                </div>
+
+                                <div class="section-brand-selection section-sidebar margin-top">
+                                    <div class="title">
+                                        <a href="javascript:;">Thương hiệu</a>
+                                    </div>
+
+                                    <div class="brand-list brand-filter">
+
+                                        <% brands.forEach(function(b,index) { %>
+                                            <div class="checkbox checkbox-danger">
+                                                <%if(b.selected){%>
+                                                    <input id="checkbox<%=index%>" type="checkbox" checked value="<%=b.brand_id%>" class="styled cb-brand">
+                                                    <%}%>
+                                                        <%if(!b.selected){%>
+                                                            <input id="checkbox<%=index%>" type="checkbox" value="<%=b.brand_id%>" class="styled cb-brand">
+                                                            <%}%>
+                                                                <label for="checkbox<%=index%>">
+                                                                    <%=b.brand_name%> (
+                                                                        <%=b.total%>)
+                                                                            <input type="hidden" value="<%=b.brand_id%>">
+                                                                </label>
+                                            </div>
+                                            <% }); %>
+                                    </div>
+
+                                </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End section sidebar -->
+
+            <div class="col-sm-12 col-md-9 col-lg-10 product-list__wrapper">
+                <div class="product-list__header">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-7">
+
+                            <%if(!search){%>
+                                <h1 class="header__title">
+                                    <%=currentCat.category_name%>
+                                </h1>
+                                <%}%>
+                                    <% if(search){%>
+                                        <h1 class="header__title">
+                                            Bạn đang tìm kiếm:
+                                            <%= keyword%>
+                                        </h1>
+                                        <%}%>
+
+
+                                            <span class="header__search-result">
+                                                Tìm thấy
+                                                <%= totalItem %> sản phẩm</span>
+                        </div>
+
+                        <div class="col-md-6 col-lg-5 filter-wrapper">
+
+                            <%if(totalPage > 1) {%>
+
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-default" onclick="filter('page','<%=Math.max(currentPage - 1,1)%>')">
+                                        <i class="fa fa-angle-left"></i>
+                                    </button>
+
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Trang
+                                            <%=currentPage%> trong
+                                                <%=totalPage%>
+                                                    <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <% for(var i=0; i < totalPage; i++) { %>
+                                                <li>
+                                                    <a href='javascript:;' onclick="filter('page','<%=i + 1%>')">Trang
+                                                        <%=i + 1%>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-default" onclick="filter('page','<%=Math.min(currentPage + 1,totalPage)%>')">
+                                        <i class="fa fa-angle-right"></i>
+                                    </button>
+                                </div>
+                                <%}%>
+                                    <div class="dropdown">
+                                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                            <%=currentSortText%>
+                                                <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+
+                                            <li>
+                                                <a href="javascript:;" onclick="filter('sort','asc')" class=<%=sort=='ASC' ? "active": ""%> >Giá tăng dần</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;" onclick="filter('sort','desc')" class=<%=sort=='DESC' ? "active": ""%> >Giá giảm dần</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                <!-- End product list header -->
+
+                <div class="row">
+                    <% items.forEach(function(item,index) { %>
+                        <div class="col-xs-4 col-sm-3 col-lg-2 product-item-wrapper">
+                                <div class="product-item__placeholder hidden-sm hidden-xs"></div>
+                            <div class="product-item">
+                                <div class="product-item__container">
+                                    <a class="product-item__thumbnail" href="<%= item.slugUrl%>">
+                                        <img class="default lazy swiper-lazy " src="<%= '/img/thumbs/' + item.image01%>" alt="<%=item.item_name%>" title="<%=item.item_name%>">
+                                        <img class="hover " src="<%= '/img/thumbs/' + (item.image02 || item.image01)%>" alt="<%=item.item_name%>" title="<%=item.item_name%>">
+                                    </a>
+
+                                    <div class="product-item__info">
+                                        <a class="product-item__info-title" href="<%= item.slugUrl%>">
+                                            <%=item.item_name%>
+                                        </a>
+
+                                        <div class="product-item__info-price">
+                                            <span class="product-item__info-price-sale">
+                                                <%=formatPrice(item.price_final)%>đ</span>
+                                                <% if (item.price > 0) { %>
+                                                    <span class="product-item__info-price-original">
+                                                    <%=formatPrice(item.price)%>đ</span>
+                                                <% } %>
+                                        </div>
+
+                                        <div class="product-item__info-discount">
+                                            <% if (item.price_final != null && item.price > 0) { %>
+                                                -<%=Math.ceil((item.price - item.price_final)/item.price*100)%>%
+                                                    <% } %>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <% }); %>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <%- include footer.ejs %>
+
+
+    <script src="js/client.js"></script>
+</body>
+
+</html>

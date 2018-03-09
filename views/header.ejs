@@ -1,0 +1,164 @@
+<nav id="header" class="navbar navbar-fixed-top">
+    <button class="btn btn-toggle visible-xs" type="button">
+        <span class="adr-icon all-department visible-xs visible-sm"></span>
+    </button>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 text-center">
+                <a href='/' class="logo">
+                    <img src='img/logo.png'>
+                </a>
+                <div class="block uppercase">
+                    Hotline:
+                    <span class="hotline">0981.878.688</span>
+                </div>
+            </div>
+
+            <div class="col-sm-2 hidden-xs header-menu">
+                <span class="adr-icon icon-group-category"></span>
+                <span class="show-all">Tất cả <br/> danh mục</span>
+                
+            </div>
+            <div class="col-sm-7">
+
+                <div class="search-box clearfix hidden-xs" role="group" aria-label="...">
+
+
+                    <!-- <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="sb-current-cat">Tất cả</span>
+                            <input id="sb_current_cat_id" type="hidden" value="-1">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu list-search-cat">
+
+                            <li>
+                                <a href='javascript:;' onclick="changeCurrentSearchCat(-1)">Tất cả
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div> -->
+                    <% if (keyword) { %>
+                        <input class="search" id="input_search" type="text" value="<%=keyword%>" placeholder="Tìm sản phẩm, thương hiệu bạn mong muốn">
+                    <% } else { %>
+                        <input class="search" id="input_search" type="text" value="" placeholder="Tìm sản phẩm, thương hiệu bạn mong muốn">
+                    <% } %>
+
+                        <span class="btn btn-link btn-search" style="background: #f02222; color: #ffffff;text-decoration:none;">Tìm kiếm</button>
+                        <script>
+                            $.get('/categories', function (data, status) {
+                                //let roots = flatToHierarchy(data, 'category_id', 'parent_id');
+                                for (var i = 0; i < data.length; i++) {
+                                    let category_id = data[i].category_id;
+                                    let category_name = data[i].category_name;
+                                    let li = $(
+                                        `
+                                        <li>
+                                            <a href='javascript:;' onclick="changeCurrentSearchCat(${category_id},'${category_name}')" >${data[i].category_name}</a>
+                                            </li>
+                                    `
+                                    )
+                                    $('.list-search-cat').append(li);
+                                }
+                            })
+
+                                // function changeCurrentSearchCat(id, name) {
+                                //     $('#sb_current_cat_id').val(id);
+                                //     if (id == -1) {
+                                //         name = "Tất cả"
+                                //     }
+                                //     $('#sb-current-cat').html(name);
+                                // }
+                        </script>
+                </div>
+            </div>
+        </div>
+        <div class="visible-xs search-box-2">
+            <span class="adr-icon icon-search"></span>
+            <input class="input-search" type='text' placeholder="Tìm sản phẩm, thương hiệu bạn mong muốn">
+        </div>
+
+    </div>
+</nav>
+
+<script src="js/offcanvas-menu.js"></script>
+
+<script>
+    $.get('/menu', function (data, status) {
+        console.log(data);
+
+        data.forEach(function(item, index){
+            if(item.category_id){
+                item.slugUrl = slugify(item.menu_name) + '-c' + item.category_id;
+            }else{
+                item.slugUrl = 'javascript:void(0);';
+            }
+        })
+
+        let roots = arrayToHierarchy(data, 'menu_id', 'parent_id');
+        roots = { children:roots};
+        console.log(roots);
+
+        $('.btn-toggle').click(() => {
+    
+            OffCanvasMenu(250, roots, 'menu_name', 'slugUrl');
+        });
+        buildHeaderMenu(roots);
+
+        
+    })
+
+    function buildHeaderMenu(roots){
+        let ul =  $('<ul class="menu-content-wrapper"></ul>');
+
+        $('.header-menu').append(ul);
+        roots.children.forEach(function(child, index){
+            let li = $('<li>');    
+            let a = $('<a href="' + child.slugUrl + '">' + child.menu_name + '</a>');
+            li.append(a);
+            let div = $('<div class="sub-menu-content">');
+            if(child.children && child.children.length){
+                let submenus = child.children;
+                submenus.forEach(function(sub, index){
+                    let a = $('<a href="' + sub.slugUrl  + '">' + sub.menu_name + '</a>');
+                    div.append(a);
+                })
+                
+            }
+            
+            li.append(div);
+            ul.append(li);
+            
+        })
+    }
+
+    function arrayToHierarchy(arr, idAttr, parentIdAttr) {
+
+        var roots = [] // things without parent
+
+        // make them accessible by guid on this map
+        var all = {}
+
+        arr.forEach(function (item) {
+            all[item[idAttr]] = item
+        })
+
+        // connect childrens to its parent, and split roots apart
+        Object.keys(all).forEach(function (idAttr) {
+            var item = all[idAttr]
+            if (item[parentIdAttr] === null) {
+                roots.push(item)
+            } else if (item[parentIdAttr] in all) {
+                var p = all[item[parentIdAttr]]
+                if (!('children' in p)) {
+                    p.children = []
+                }
+                p.children.push(item)
+            }
+        })
+
+        // done!
+        return roots
+    }
+</script>

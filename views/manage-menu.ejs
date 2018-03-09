@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <title>Quản lý nhóm hàng</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Hoanggiamart</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/admin/quan-ly-san-pham">Sản phẩm</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-nhom-hang">Nhóm hàng</a>
+                </li>
+                <li class="active">
+                    <a href="/admin/quan-ly-menu">Menu</a>
+                </li>
+                <li>
+                    <a href="/admin/quan-ly-nhan">Nhãn</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+
+                <h4>Cây menu:</h4>
+                <div id="menu-tree"></div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label>Tên menu:</label>
+                    <input class="form-control" type="text"  id="name">
+
+                </div>
+
+                <div class="form-group">
+                    <label for="sel1">Menu cha:</label>
+                    <select class="form-control" id="menu_parent_id">
+                        <option value="">--</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="sel1">Link tới:</label>
+                    <select class="form-control" id="categoryId">
+                        <option value="">--</option>
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label for="sel1">Độ ưu tiên:</label>
+                    <select class="form-control" id="priority">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+
+                </div>
+
+                <div>
+                        <input type="checkbox" value="1" id="active" checked>
+                        <label for="active">Menu chính (sẽ hiện ở trang chủ)
+                        </label>
+                    </div>
+
+                <h4>Tags:</h4>
+                <hr/>
+                <div id="tag-cloud"></div>
+                <hr/>
+                <div class="form-group">
+
+                    <button type="button" class="btn btn-success btn-sm btn-add-menu">
+                        <span class="glyphicon glyphicon-plus"></span> Thêm mới</button>
+                    <button type="button" class="btn btn-primary btn-sm btn-save-menu">
+                        <span class="glyphicon glyphicon-ok"></span> Lưu thay đổi</button>
+                    <!-- <button type="button" class="btn btn-danger btn-sm btn-remove">
+                        <span class="glyphicon glyphicon-remove"></span> Xóa</button> -->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="/js/admin.js"></script>
+    <script>
+        var menus;
+        function drawMenu(lastActiveId){
+            $.get('/menu', function (data, status) {
+                menus = data;
+                for (let menu of data) {
+                    $('#menu_parent_id').append(
+                        `<option value=${menu.menu_id}>${menu.menu_name}</option>`)
+                }
+                let roots = flatToHierarchy(data, 'menu_id', 'parent_id');
+                let html = buildTree(roots,'menu_id','menu_name', true);
+                $('#menu-tree').html(html);
+
+                if(lastActiveId){
+                    $('#menu-' + lastActiveId).addClass('active');
+                }
+            });
+
+        }
+        var categories;
+        $.get('/categories', function (data, status) {
+            categories = data;
+            for (let cat of data) {
+                $('#categoryId').append(
+                    `<option value=${cat.category_id}>${cat.category_name}</option>`)
+            }
+            let roots = flatToHierarchy(data, 'category_id', 'parent_id');
+            let html = buildTree(roots, true);
+            $('#category-tree').html(html);
+
+        })
+
+        drawMenu();
+
+        $.get('/tags', function (data, status) {
+            for (var i = 0; i < data.length; i++) {
+                let span = $('<a class="tag-item" href="javascript:;" data-tag-id="' + data[i].tag_id +  '">' + data[i].tag_name + '</span>');
+                    span.click(function(){
+                        $(this).toggleClass('active');
+                    })
+                $('#tag-cloud').append(span);
+            }
+        })
+
+        function setActive(id) {
+            console.log("id:" + id)
+            $('#menu-tree a').removeClass('active');
+            $('#menu-' + id).addClass('active');
+
+            for (let menu of menus) {
+                if (menu.menu_id == id) {
+                    if (menu.parent_id) {
+                        $('#menu_parent_id').val(menu.parent_id);
+                    } else {
+                        $('#menu_parent_id').val(-1);
+
+                    }
+                }
+            }
+
+
+            if (menus && menus.length) {
+                for (let i = 0; i < menus.length; i++) {
+                    if (menus[i].menu_id == id) {
+                        populateData(menus[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        function buildTree(data,idProp, nameProp, isSub) {
+            var html = (isSub) ? '<div>' : ''; // Wrap with div if true
+            html += '<ul>';
+            for (item in data) {
+                html += '<li>';
+                if (typeof (data[item].children) === 'object') { // An array will return 'object'
+                    if (isSub) {
+                        html +=
+                            `<a href="javascript:;" id="menu-${data[item][idProp]}" onclick="setActive(${data[item][idProp]})">` +
+                            data[item][nameProp] + '</a>';
+                    } else {
+                        html +=
+                            `<a href="javascript:; " id="menu-${data[item][idProp]}"  onclick="setActive(${data[item][idProp]})">` +
+                            data[item][nameProp] + '</a>'; // Submenu found, but top level list item.
+                    }
+                    html += buildTree(data[item].children, idProp, nameProp, true); // Submenu found. Calling recursively same method (and wrapping it in a div)
+                } else {
+                    html +=
+                        `<a href="javascript:;" id="menu-${data[item][idProp]}" onclick="setActive(${data[item][idProp]})">` +
+                        data[item][nameProp] + '</a>'; // No submenu
+                }
+                html += '</li>';
+            }
+            html += '</ul>';
+            html += (isSub) ? '</div>' : '';
+            return html;
+        }
+
+        function flatToHierarchy(flat, idAttr, parentIdAttr) {
+
+            var roots = [] // things without parent
+
+            // make them accessible by guid on this map
+            var all = {}
+
+            flat.forEach(function (item) {
+                all[item[idAttr]] = item
+            })
+
+            // connect childrens to its parent, and split roots apart
+            Object.keys(all).forEach(function (idAttr) {
+                var item = all[idAttr]
+                if (item[parentIdAttr] === null) {
+                    roots.push(item)
+                } else if (item[parentIdAttr] in all) {
+                    var p = all[item[parentIdAttr]]
+                    if (!('children' in p)) {
+                        p.children = []
+                    }
+                    p.children.push(item)
+                }
+            })
+
+            // done!
+            return roots
+        }
+
+
+        function populateData(menu) {
+            $('#name').val(menu.menu_name);
+            $('#categoryId').val(menu.category_id);
+
+            //populate tag
+            //clear old active tag
+            $('.tag-item').removeClass('active');
+
+            $('#active').prop('checked',menu.active);
+
+            let data = menu.tagIds || '';
+            if(data) {
+                data = data.match(/[^,]+/g);
+
+                for(let id of data){
+                    $('.tag-item[data-tag-id=' + id + ']').addClass('active');
+                }
+            }
+            
+        }
+
+        $('.btn-add-menu').click(function () {
+            let data = {};
+
+            let name = $('#name').val();
+            if (!name) {
+                alert('Chưa nhập tên menu')
+            } else {
+                data.menuName = name;
+                data.parentId = $('#menu_parent_id').val();
+                data.active = $('#active').is(':checked');
+                data.priority = $('#priority').val();
+                data.categoryId = $('#categoryId').val();
+                data.tagIds = ''; 
+                delim = '';
+
+                $('.tag-item.active').each(function(){
+                    let id = $(this).attr('data-tag-id'); data.tagIds+= delim + id;
+                    delim = ',';
+                }); 
+
+                data.tagIds = data.tagIds || '';
+
+                let c = window.confirm('Thêm menu "' + data.menuName + '?');
+                if(c){
+                    $.ajax({
+                        url: '/menu',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (res) {
+                            alert('Thêm thành công!');
+                            if(res && res[0] && res[0][0] && res[0][0].menu_id){
+                                drawMenu(res[0][0].menu_id);
+                            }else{
+                                drawMenu();
+                            }
+                        }
+                    })
+                }
+            }
+        })
+
+        $('.btn-save-menu').click(function () {
+            let data = {};
+            let count = $('#menu-tree li a.active').length;
+
+            if (!count) {
+                alert('Chưa chọn menu.')
+            } else {
+                let name = $('#name').val();
+                if (!name) {
+                    alert('Chưa nhập tên menu')
+                } else {
+
+                    let id = $('#menu-tree li a.active').attr('id').split('-')[1];
+                    data.menuId = id;
+                    data.menuName = name;
+                    data.parentId = $('#menu_parent_id').val();
+                    data.active = $('#active').is(':checked');
+                    data.categoryId = $('#categoryId').val();
+
+                    delim = '';
+                    data.tagIds = ''; 
+                    $('.tag-item.active').each(function(){
+                        let id = $(this).attr('data-tag-id'); data.tagIds+= delim + id;
+                        delim = ',';
+                    }); 
+
+                    data.tagIds = data.tagIds || '';
+
+                    let c = window.confirm('Sửa menu "' + data.menuName + '?');
+                    if(c){
+                        $.ajax({
+                            url: '/menu',
+                            type: "POST",
+                            data: JSON.stringify(data),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (res) {
+                                alert('Sửa thành công!');
+                                drawMenu(data.menuId);
+                            }
+                        })
+                    }
+                }
+            }
+
+        })
+    </script>
+</body>
+
+
+</html>
